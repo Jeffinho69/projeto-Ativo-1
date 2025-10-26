@@ -1,0 +1,1187 @@
+:root{
+
+    --bg:#f8fafc;
+
+    --card:#ffffff;
+
+    --muted:#6b7280;
+
+    --accent:#1e88e5; /* Azul principal */
+
+    --accent-700:#1565c0; /* Azul escuro */
+
+    --glass: rgba(30,136,229,0.06);
+
+    --success:#16a34a;
+
+    --danger:#ef4444;
+
+    /* Sombra refinada com mais profundidade */
+
+    --shadow: 0 10px 30px rgba(30,136,229,0.15), 0 0 8px rgba(30,136,229,0.05);
+
+}
+
+*{
+
+    box-sizing:border-box;
+
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial;
+
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); /* Transição global suave */
+
+}
+
+body{
+font-family: 'Poppins', sans-serif;
+    margin:0;
+
+    background:var(--bg);
+
+    color:#111;
+
+}
+
+
+
+/* ==================================== */
+
+/* 1. LAYOUT GERAL E EFEITOS DE PROFUNDIDADE */
+
+/* ==================================== */
+
+
+
+.top-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    padding:18px 24px;
+
+    background:var(--card);
+
+    box-shadow:var(--shadow);
+
+}
+
+.brasao{
+
+    width:64px;
+
+    height:auto;
+
+    border-radius:8px;
+
+}
+
+.header-title{
+
+    font-weight:700;
+
+}
+
+.login-main{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    height:calc(100vh - 88px);
+
+    padding:24px;
+
+    perspective: 1500px;
+
+}
+
+.login-card{
+
+    display:flex;
+
+    gap:28px;
+
+    max-width:1000px;
+
+    width:100%;  
+
+    /* MUDANÇA CRÍTICA: Efeito de Vidro Fosco (Glassmorphism) */
+
+    background: rgba(255, 255, 255, 0.75); /* Fundo branco um pouco mais opaco */
+
+    backdrop-filter: blur(12px);           /* Mais desfoque */
+
+    -webkit-backdrop-filter: blur(12px);  
+
+    border-radius:24px; /* Borda mais suave e moderna */
+
+    padding:40px;      
+
+    box-shadow: 0 20px 50px rgba(30,136,229,0.3), 0 0 15px rgba(30,136,229,0.1); /* Sombra mais intensa */
+
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    transform-style: preserve-3d;
+
+    border: 1px solid rgba(255, 255, 255, 0.4); /* Borda de vidro sutil */
+
+}
+
+.login-card:hover {
+
+    transform: scale(1.01); /* Escala sutil ao passar o mouse */
+
+}
+
+/* ... (Seu código .illustration e .chars existente) ... */
+
+.illustration {
+
+  flex:1;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  background: var(--accent-light);
+
+  border-radius:18px; /* Mais arredondado */
+
+  padding:24px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  box-shadow: inset 0 0 25px rgba(30, 136, 229, 0.5); /* Brilho interno mais forte */
+
+}
+
+.chars {
+
+  width:320px;
+
+  height:220px;
+
+  position:relative;
+
+  /* Animação de fundo pulsante */
+
+  background: repeating-linear-gradient(
+
+    45deg,
+
+    rgba(255,255,255,0.08),
+
+    rgba(255,255,255,0.08) 12px,
+
+    transparent 12px,
+
+    transparent 24px
+
+  );
+
+  animation: scan 20s linear infinite;
+
+}
+
+@keyframes scan {
+
+  from { background-position: 0 0; }
+
+  to { background-position: 480px 480px; }
+
+}
+
+.char{
+
+    position:absolute;
+
+    transition:all .5s ease;
+
+    border-radius:12px;
+
+}
+
+/* ... (Cores e posições dos chars) ... */
+
+.char1{width:90px;height:90px;background:#7c5cff;left:40px;top:20px;transform:rotate(-8deg)}
+
+.char2{width:110px;height:110px;background:#ff6b6b;left:10px;bottom:0;border-radius:55px 55px 20px 20px}
+
+.char3{width:80px;height:160px;background:#ffd166;right:40px;bottom:20px;border-radius:30px}
+
+.char4{width:60px;height:100px;background:#0a0a0a;left:140px;bottom:20px;border-radius:6px}
+
+
+
+/* ESTILOS DE LOGIN INTERATIVO (PEEP) */
+
+.chars.peep .char1{
+
+  transform: translateY(10px) rotate(-4deg);
+
+}
+
+.chars.peep .char2{
+
+  transform: translateX(-10px) translateY(0);
+
+}
+
+.chars.peep .char3{
+
+  transform: translateX(5px) translateY(-5px);
+
+}
+
+.chars.peep .char4{
+
+  transform: translateX(-5px) rotate(5deg);
+
+}
+
+.chars.hide .char1{transform:translateY(40px) scale(.6);opacity:.3}
+
+.chars.hide .char2{transform:translateY(60px) scale(.6);opacity:.3}
+
+.chars.hide .char3{transform:translateY(60px) scale(.6);opacity:.3}
+
+.chars.hide .char4{transform:translateY(40px) scale(.5);opacity:.2}
+
+
+
+/* Foco e entrada */
+
+.login-box{flex:1;padding:8px}
+
+.muted{color:var(--muted)}
+
+.login-box label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
+
+.login-box input{
+
+    width:100%;
+
+    padding:14px; /* Mais preenchimento */
+
+    margin-top:6px;
+
+    border-radius:12px; /* Mais arredondado */
+
+    border:2px solid #e6edf3; /* Borda mais grossa */
+
+    background:var (--card);
+
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+}
+
+.login-box input:focus {
+
+    outline: none;
+
+    border-color: var(--accent); /* Cor de foco mais suave */
+
+    box-shadow: 0 0 15px rgba(30,136,229,0.3); /* Brilho maior no foco */
+
+}
+
+.hint{margin-top:8px}
+
+
+
+/* ==================================== */
+
+/* 2. BOTÕES (Aprimoramento do Acabamento) */
+
+/* ==================================== */
+
+
+
+.btn{
+
+    display:inline-flex; /* Ajuste para centralizar ícones se usar */
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:10px 18px;
+
+    border-radius:10px;
+
+    border:none;
+
+    cursor:pointer;
+
+    font-weight:700; /* Mais espessura */
+
+    font-size: 15px;
+
+    transition: all 0.25s ease;
+
+}
+
+
+
+/* Botão Primário (o mais Foda!) */
+
+.btn.primary{
+
+    background:linear-gradient(90deg,var(--accent),var(--accent-700));
+
+    color:white;
+
+    /* Sombra com mais destaque e brilho interno sutil */
+
+    box-shadow: 0 8px 20px rgba(30,136,229,0.3), inset 0 0 10px rgba(255, 255, 255, 0.3);
+
+    /* Animação de pulso sutil para o botão mais importante */
+
+    animation: pulse 2s infinite cubic-bezier(0.66, 0.01, 0.34, 0.99);
+
+}
+
+.btn.primary:hover {
+
+    transform: translateY(-2px) scale(1.01);
+
+    box-shadow: 0 12px 30px rgba(30,136,229,0.4), inset 0 0 15px rgba(255, 255, 255, 0.5);
+
+}
+
+@keyframes pulse {
+
+  0%, 100% { box-shadow: 0 8px 20px rgba(30,136,229,0.3), inset 0 0 10px rgba(255, 255, 255, 0.3); }
+
+  50% { box-shadow: 0 8px 25px rgba(30,136,229,0.5), inset 0 0 10px rgba(255, 255, 255, 0.5); }
+
+}
+
+
+
+.btn.ghost{
+
+    background:transparent;
+
+    border:1px solid #e6edf3;
+
+    color:var(--muted);
+
+    padding:10px 14px;
+
+    border-radius:10px;
+
+}
+
+.btn.ghost:hover {
+
+    border-color: var(--accent);
+
+    color: var(--accent-700);
+
+    box-shadow: 0 2px 8px rgba(30,136,229,0.1);
+
+}
+
+
+
+/* Botão GIGANTE de Adicionar */
+
+.visitor-form .btn.primary {
+
+  grid-column: 1 / -1; /* Ocupa a linha inteira */
+
+  font-size: 1.2em;
+
+  padding: 16px;
+
+  margin-top: 8px; /* Espaçamento extra */
+
+}
+
+
+
+
+
+/* ==================================== */
+
+/* 3. TOPBAR E INFORMAÇÕES DE STATUS */
+
+/* ==================================== */
+
+
+
+.topbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:12px 24px;
+
+    background:transparent;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 1000;
+
+}
+
+.topbar.light{
+
+    background:var(--card);
+
+    box-shadow:var(--shadow);
+
+}
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px; /* Mais espaço */
+
+}
+
+.title{
+
+    font-weight:900; /* Mais peso */
+
+    font-size: 1.3em;
+
+}
+
+.subtitle{
+
+    font-size:14px; /* Maior */
+
+    color:var(--muted);
+
+}
+
+.top-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+}
+
+/* Estilo de Glassmorphism para os elementos de status */
+
+.clock{
+
+    padding:10px 14px;
+
+    border-radius:10px;
+
+    background: rgba(30,136,229,0.1); /* Um pouco mais escuro */
+
+    backdrop-filter: blur(5px);
+
+    font-weight:800;
+
+    color: var(--accent-700);
+
+    border: 1px solid rgba(30,136,229,0.2);
+
+}
+
+.user-display{
+
+    padding:10px 14px;
+
+    border-radius:10px;
+
+    background:linear-gradient(90deg,#eef7ff,#f3f9ff);
+
+    font-weight:800;
+
+    color:var(--accent-700);
+
+    border: 1px solid #d0e7ff;
+
+}
+
+
+
+/* ==================================== */
+
+/* 4. CONTEÚDO PRINCIPAL (MAIN GRID) */
+
+/* ==================================== */
+
+
+
+.main-grid{
+
+    display:grid;
+
+    grid-template-columns:280px 1fr; /* Sidebar um pouco mais larga */
+
+    gap:24px; /* Mais espaçamento */
+
+    padding:24px;
+
+}
+
+
+
+/* NOVO: Estilo de Contêiner com Borda de Neon Sutil */
+
+.sidebar, .content {
+
+    background: var(--card);
+
+    padding: 20px; /* Mais preenchimento */
+
+    border-radius: 18px; /* Mais arredondado */
+
+    box-shadow: var(--shadow);
+
+    /* Borda de acento sutil, criando a sensação de "tecnológico" */
+
+    border: 1px solid rgba(30, 136, 229, 0.1);
+
+    transition: all 0.3s ease-in-out;
+
+}
+
+
+
+/* NOVO: Efeito de Brilho ao Passar o Mouse nos Contêineres */
+
+.sidebar:hover, .content:hover {
+
+    box-shadow: 0 16px 40px rgba(30,136,229,0.3), 0 0 15px rgba(30,136,229,0.15);
+
+    transform: translateY(-2px);
+
+    border-color: rgba(30, 136, 229, 0.3);
+
+}
+
+
+
+/* ==================================== */
+
+/* 5. SIDEBAR (Lista de Vereadores) */
+
+/* ==================================== */
+
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.toast {
+  background: #333;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-top: 8px;
+  opacity: 0.9;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.toast.success { background: #28a745; }
+.toast.error { background: #dc3545; }
+
+
+button.ghost.danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+button.ghost.danger:hover {
+  background-color: #b02a37;
+}
+
+
+.council-list{
+
+    list-style: none; /* Remove marcadores */
+
+    padding: 0;
+
+    max-height:70vh;
+
+    overflow-y:auto;
+
+    margin-top:12px;
+
+}
+
+
+
+/* Estilo de lista Foda */
+
+.council-list li{
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    margin-bottom: 8px;
+
+    background: linear-gradient(90deg,#fbfdff,#f6f9ff);
+
+    border: 1px solid #eef3f9;
+
+    color: #0b2740;
+
+    font-weight: 600;
+
+    transition: all 0.3s ease;
+
+    cursor: pointer;
+
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5); /* Sombra sutil no texto */
+
+}
+
+
+
+.council-list li:hover {
+
+    background: linear-gradient(90deg,#e6f4ff,#dff0ff);
+
+    box-shadow: 0 4px 12px rgba(30,136,229,0.15);
+
+    transform: translateX(4px);
+
+}
+
+
+
+/* Estado Ativo/Selecionado (Simulação de um LED aceso) */
+
+.council-list li.selected {
+
+    background: linear-gradient(90deg, var(--accent), var(--accent-700));
+
+    color: white;
+
+    font-weight: 700;
+
+    box-shadow: 0 0 15px rgba(30,136,229,0.5);
+
+    border-color: var(--accent);
+
+    transform: translateX(0);
+
+    text-shadow: none;
+
+}
+
+
+
+/* ==================================== */
+
+/* 6. CONTEÚDO (TABS e Formulário) */
+
+/* ==================================== */
+
+
+
+.controls{
+
+    display:flex;
+
+    gap:12px; /* Mais espaço entre as abas */
+
+    margin-bottom:20px;
+
+    border-bottom: 2px solid #eef3f9; /* Linha de separação */
+
+    padding-bottom: 8px;
+
+}
+
+.tab{
+
+    background:#fbfdff;
+
+    padding:10px 16px;
+
+    border-radius:10px 10px 0 0; /* Borda arredondada no topo */
+
+    border:1px solid #eef3f9;
+
+    border-bottom: none;
+
+    cursor:pointer;
+
+    font-weight: 600;
+
+    color: var(--muted);
+
+    transition: all 0.2s ease;
+
+}
+
+.tab:hover:not(.active) {
+
+    background: #e6f4ff;
+
+}
+
+
+
+.tab.active{
+
+    background:linear-gradient(90deg,var(--accent),var(--accent-700));
+
+    color:white;
+
+    transform: translateY(2px); /* Efeito de "subida" */
+
+    box-shadow: 0 4px 15px rgba(30,136,229,0.3);
+
+    border-color: var(--accent);
+
+}
+
+.panel{display:none}
+
+.panel.active{
+
+    display:block;
+
+    /* Animação para a entrada do painel */
+
+    animation: floatIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+}
+
+@keyframes floatIn {
+
+  from { opacity: 0; transform: translateY(15px); }
+
+  to { opacity: 1; transform: translateY(0); }
+
+}
+
+
+
+.visitor-form{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr; /* Layout em 2 colunas */
+
+    gap:15px; /* Mais espaçamento */
+
+    align-items:center;
+
+}
+
+.visitor-form input,.visitor-form select{
+
+    padding:12px;
+
+    border-radius:10px;
+
+    border:2px solid #e6edf3;
+
+    background:transparent;
+
+}
+
+.visitor-form input:focus, .visitor-form select:focus {
+
+    border-color: var(--accent);
+
+    box-shadow: 0 0 8px rgba(30,136,229,0.2);
+
+    outline: none;
+
+}
+
+
+
+.note{margin-top:10px}
+
+
+
+/* ==================================== */
+
+/* 7. TABELAS (Melhorando a Leitura) */
+
+/* ==================================== */
+
+
+
+.table{
+
+    width:100%;
+
+    border-collapse:separate; /* Para bordas arredondadas */
+
+    border-spacing: 0;
+
+    margin-top:15px;
+
+    border-radius: 12px;
+
+    overflow: hidden; /* Garante que as bordas arredondadas funcionem */
+
+}
+
+.table th,.table td{
+
+    padding:14px; /* Mais preenchimento */
+
+    border-bottom:1px solid #eef3f9;
+
+    text-align:left;
+
+}
+
+.table thead th{
+
+    background: var(--glass); /* Glassmorphism no cabeçalho */
+
+    color: #0b2740; /* Cor mais escura que o muted */
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    font-size: 0.85em;
+
+    letter-spacing: 0.5px;
+
+}
+
+.table tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+.table tbody tr:hover {
+
+    background-color: #f7f9fc; /* Sutil destaque ao passar o mouse na linha */
+
+}
+
+
+
+.footer{
+
+    padding:18px;
+
+    text-align:center;
+
+    margin-top:24px;
+
+    border-top:1px solid #eef3f9;
+
+    color:var(--muted);
+
+}
+
+/* ... (Seu código para toasts, relatorio-acoes e autocomplete) ... */
+
+.toast-container{position:fixed;right:20px;top:20px;z-index:9999}
+
+.toast{background:rgba(255,255,255,0.98);padding:12px 16px;margin-bottom:10px;border-radius:10px;box-shadow:0 8px 30px rgba(11,18,28,0.12);display:flex;gap:12px;align-items:center;border-left:4px solid var(--accent-700)}
+
+.toast.success{border-left-color:var(--success)}
+
+.toast.error{border-left-color:var(--danger)}
+
+
+
+.relatorio-acoes {
+
+  margin-top: 0px;
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  justify-content: center;
+
+}
+
+.btn-limpar {
+
+  background: linear-gradient(90deg, #e53935, #c62828);
+
+  color: #fff;
+
+  border: none;
+
+  padding: 10px 18px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-weight: 600;
+
+  transition: 0.3s;
+
+}
+
+.btn-limpar:hover {
+
+  transform: translateY(-2px) scale(1.01);
+
+  box-shadow: 0 4px 15px rgba(229, 57, 53, 0.4);
+
+}
+
+/* 🔍 Autocomplete */
+
+.autocomplete-wrap {
+
+  position: relative;
+
+  grid-column: 1 / 2; /* Garante que o wrap siga o layout */
+
+}
+
+.suggestions {
+
+  position: absolute;
+
+  left: 0;
+
+  right: 0;
+
+  top: calc(100% + 5px); /* Abaixo do input com um pequeno espaço */
+
+  background: var(--card);
+
+  border: 1px solid #e6edf3;
+
+  box-shadow: 0 10px 30px rgba(11,18,28,0.1);
+
+  z-index: 99;
+
+  border-radius: 10px;
+
+  max-height: 250px;
+
+  overflow-y: auto;
+
+}
+
+.suggestions.hidden {
+
+  display: none;
+
+}
+
+.suggestion-item {
+
+  padding: 12px;
+
+  cursor: pointer;
+
+  transition: background 0.2s;
+
+}
+
+.suggestion-item:hover {
+
+  background: #e8f2ff;
+
+}
+
+
+
+@media (max-width:1000px){
+
+    .main-grid{grid-template-columns:1fr;padding:12px}
+
+    .visitor-form{grid-template-columns:1fr;gap:12px}
+
+    .visitor-form > * { grid-column: 1 / -1 !important; } /* Força todos a ficarem em uma coluna no mobile */
+
+    .login-card{flex-direction:column}
+
+}
+
+/* --- centraliza e limita largura do layout principal --- */
+.main-grid {
+  max-width: 1200px;
+  margin: 0 auto;        /* centraliza horizontalmente */
+  grid-template-columns: 320px 1fr; /* fixar largura da sidebar para evitar overflow */
+}
+
+/* força a sidebar a ficar compacta e o content a ajustar ao conteúdo */
+.sidebar {
+  width: 320px;
+  min-width: 240px;
+}
+
+/* o content não precisa ocupar 100vh quando houver pouco conteúdo */
+.content {
+  min-height: 120px; /* ajusta conforme necessário */
+}
+
+/* botão vermelho (negativo) consistente com tema */
+.btn-deny, button.ghost.danger {
+  background: linear-gradient(45deg,#e74c3c,#b02a37);
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  border: none;
+  font-weight: 700;
+}
+
+/* botão ghost/danger hover */
+button.ghost.danger:hover, .btn-deny:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(176,42,55,0.25);
+}
+
+/* evita que colunas da tabela quebrem o layout */
+.table td, .table th {
+  word-break: break-word;
+  vertical-align: middle;
+}
+
+/* deixa o card lateral com largura mínima condizente ao conteúdo */
+.sidebar.light {
+  width: auto;
+  max-width: 360px;
+}
+
+/* ================== MELHOR VISUAL - PAINEL DO VEREADOR ================== */
+
+/* Centraliza o card de notificações e ajusta espaçamento */
+.main-grid {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+
+/* Card principal */
+.content.light {
+  background: #ffffff;
+  width: 100%;
+  max-width: 850px;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(0, 40, 100, 0.08);
+  transition: all 0.3s ease;
+}
+
+/* Efeito leve ao passar o mouse (deixa moderno) */
+.content.light:hover {
+  transform: scale(1.01);
+  box-shadow: 0 12px 40px rgba(0, 40, 100, 0.12);
+}
+
+/* Títulos */
+.content.light h3 {
+  font-size: 1.6rem;
+  color: #0b3d91;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.content.light h4 {
+  font-size: 1.1rem;
+  color: #333;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+/* Texto informativo */
+.content.light .note {
+  color: #777;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+/* Tabelas */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f8fbff;
+}
+
+.table th {
+  background: #e6f0ff;
+  padding: 10px;
+  color: #002a5e;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #333;
+}
+
+/* Botões */
+button.ghost {
+  background: linear-gradient(180deg, #0078ff, #0057c2);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+button.ghost:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+/* Botão de negar */
+button.ghost.danger {
+  background: linear-gradient(180deg, #d9534f, #b52b27);
+}
+
+/* Efeito hover mais bonito */
+button.ghost.danger:hover {
+  background: linear-gradient(180deg, #b52b27, #d9534f);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .content.light {
+    padding: 24px;
+  }
+
+  .table th, .table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+}

@@ -42,6 +42,9 @@ $councilors = [
       <div id="clock" class="clock">--:--:--</div>
       <div id="userDisplay" class="user-display"><?php echo htmlspecialchars($user['fullName']); ?></div>
       <button id="logoutBtn" class="btn ghost" onclick="location.href='logout.php'">Sair</button>
+      <button id="openChatBtn" class="btn ghost" onclick="location.href='chat.php'">💬 Chat</button>
+<span id="chatBadge" class="badge" style="display:none;margin-left:8px">0</span>
+
     </div>
   </header>
 
@@ -119,4 +122,19 @@ $councilors = [
 
   <div id="toast-container" class="toast-container"></div>
 </body>
+
+<script>
+function updateTopBadge(){
+  fetch('chat_api.php?action=poll_unread').then(r=>r.json()).then(j=>{
+    if (!j.ok) return;
+    const b = document.getElementById('chatBadge');
+    if (!b) return;
+    if (j.unread && j.unread>0) { b.style.display='inline-block'; b.textContent = j.unread; }
+    else b.style.display='none';
+  });
+}
+updateTopBadge();
+setInterval(updateTopBadge, 5000);
+</script>
+
 </html>

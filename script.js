@@ -417,76 +417,127 @@ window.denyVisitor = function(id) {
 
 
 
-  // ---------------------- VEREADOR (polling) ----------------------
+  // ---------------------- VEREADOR (polling & UI) ----------------------
+if (document.getElementById('vereadorPendingList')) {
 
-  if (document.getElementById('vereadorPending')) {
+  // Funções que chamam a API (assumem api.php?action=...)
+  window.approveVisitor = function(id){
+    fetch('api.php?action=approve', {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:`id=${encodeURIComponent(id)}`
+    }).then(r=>r.json()).then(j=>{
+      if (j.ok) {
+        showToast('Entrada aprovada', 'success');
+        loadVereador(); // atualizar lists
+      } else showToast(j.msg || 'Erro ao aprovar','error');
+    }).catch(()=> showToast('Erro de comunicação','error'));
+  };
 
-    function loadVereador() {
+  window.denyVisitor = function(id){
+    if (!confirm('Tem certeza que deseja negar este visitante?')) return;
+    fetch('api.php?action=deny', {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:`id=${encodeURIComponent(id)}`
+    }).then(r=>r.json()).then(j=>{
+      if (j.ok) {
+        showToast('Visita negada com sucesso', 'success');
+        loadVereador();
+      } else showToast(j.msg || 'Erro ao negar','error');
+    }).catch(()=> showToast('Erro de comunicação','error'));
+  };
 
-      fetch('api.php?action=my_pending_for_vereador').then(r=>r.json()).then(j=>{
+  window.registerExit = function(id){
+    fetch('api.php?action=exit', {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:`id=${encodeURIComponent(id)}`
+    }).then(r=>r.json()).then(j=>{
+      if (j.ok) {
+        showToast('Saída registrada', 'success');
+        loadVereador();
+      } else showToast(j.msg || 'Erro ao registrar saída','error');
+    }).catch(()=> showToast('Erro de comunicação','error'));
+  };
 
-        if (j.ok) {
-
-          const tbody = document.querySelector('#vereadorPending tbody');
-
-          tbody.innerHTML = '';
-
-          j.data.forEach(v=>{
-
-            const tr = document.createElement('tr');
-
-            tr.innerHTML = `
-  <td>${escapeHtml(v.name)}</td>
-  <td>${escapeHtml(v.doc||'')}</td>
-  <td>${escapeHtml(v.reason||'Motivo não informado')}</td>
-  <td>${escapeHtml(v.added_at)}</td>
-  <td>
-    <button class="ghost" onclick="approveVisitor(${v.id})">Aceitar</button>
-    <button class="ghost danger" onclick="denyVisitor(${v.id})">Negar</button>
-  </td>`;
-
-
-
-            tbody.appendChild(tr);
-
-          });
-
-        }
-
+  // Renderiza a lista pendente e presente como "cards"
+  function loadVereador() {
+    // pendentes para este vereador
+    fetch('api.php?action=my_pending_for_vereador').then(r=>r.json()).then(j=>{
+      if (!j.ok) { console.warn('pendentes vazio'); return; }
+      const container = document.getElementById('vereadorPendingList');
+      container.innerHTML = '';
+      if (j.data.length === 0) {
+        container.innerHTML = '<div class="small-muted">Nenhuma visita pendente.</div>';
+        return;
+      }
+      j.data.forEach(v => {
+        // v should contain: id, name, doc, added_at, reason
+        const row = document.createElement('div');
+        row.className = 'notif-row';
+        row.setAttribute('data-id', v.id);
+        row.innerHTML = `
+          <div>
+            <h4>${escapeHtml(v.name)}</h4>
+            <div class="small-muted">${escapeHtml(v.council || '')}</div>
+          </div>
+          <div>
+            <div class="small-muted">Motivo</div>
+            <div>${escapeHtml(v.reason || '-')}</div>
+          </div>
+          <div>
+            <div class="small-muted">Entrada</div>
+            <div>${escapeHtml(v.added_at || '-')}</div>
+          </div>
+          <div class="actions">
+            <button class="btn-accept" onclick="approveVisitor(${v.id})">Aceitar</button>
+            <button class="btn-deny" onclick="denyVisitor(${v.id})">Negar</button>
+          </div>
+        `;
+        container.appendChild(row);
       });
+    }).catch(e=> console.error(e));
 
-      fetch('api.php?action=my_present_for_vereador').then(r=>r.json()).then(j=>{
-
-        if (j.ok) {
-
-          const tbody = document.querySelector('#vereadorPresent tbody');
-
-          tbody.innerHTML = '';
-
-          j.data.forEach(v=>{
-
-            const tr = document.createElement('tr');
-
-            tr.innerHTML = `<td>${escapeHtml(v.name)}</td><td>${escapeHtml(v.doc||'')}</td><td>${escapeHtml(v.entered_at)}</td><td>${escapeHtml(v.left_at||'-')}</td>
-
-              <td><button class="ghost" onclick="registerExit(${v.id})">Registrar Saída</button></td>`;
-
-            tbody.appendChild(tr);
-
-          });
-
-        }
-
+    // presentes atribuídos a este vereador
+    fetch('api.php?action=my_present_for_vereador').then(r=>r.json()).then(j=>{
+      if (!j.ok) return;
+      const container = document.getElementById('vereadorPresentList');
+      container.innerHTML = '';
+      if (j.data.length === 0) {
+        container.innerHTML = '<div class="small-muted">Nenhuma pessoa presente.</div>';
+        return;
+      }
+      j.data.forEach(v => {
+        const row = document.createElement('div');
+        row.className = 'notif-row';
+        row.setAttribute('data-id', v.id);
+        row.innerHTML = `
+          <div>
+            <h4>${escapeHtml(v.name)}</h4>
+            <div class="small-muted">${escapeHtml(v.council || '')}</div>
+          </div>
+          <div>
+            <div class="small-muted">Motivo</div>
+            <div>${escapeHtml(v.reason || '-')}</div>
+          </div>
+          <div>
+            <div class="small-muted">Entrada</div>
+            <div>${escapeHtml(v.entered_at || '-')}</div>
+          </div>
+          <div class="actions">
+            <button class="btn-accept" onclick="registerExit(${v.id})">Registrar Saída</button>
+          </div>
+        `;
+        container.appendChild(row);
       });
-
-    }
-
-    loadVereador();
-
-    setInterval(loadVereador, 5000); // polling a cada 5s
-
+    }).catch(e=> console.error(e));
   }
 
+  // chama logo e depois a cada 5s (polling)
+  loadVereador();
+  setInterval(loadVereador, 5000);
+}
 
 
   // ---------------------- util ----------------------
@@ -524,6 +575,16 @@ window.denyVisitor = function(id) {
   renderLists();
 
   loadReportUsers();
+
+// Mantém o banco ativo — ping a cada 4 minutos
+setInterval(() => {
+  fetch('keep_alive.php')
+    .then(r => r.json())
+    .then(j => {
+      if (j.ok) console.log('Banco ativo:', j.hora);
+    })
+    .catch(() => console.warn('Ping falhou'));
+}, 240000); // 240000 ms = 4 minutos
 
 });
 

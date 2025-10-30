@@ -187,4 +187,7 @@ switch ($action) {
 
   default:
     json_die(['ok'=>false,'msg'=>'Ação desconhecida']);
+
+
+
 }

@@ -44,5 +44,14 @@ $_SESSION['user'] = [
     'role' => $user['role'],
 ];
 
-header('Location: painel.php');
+// redireciona conforme o tipo de usuário
+if ($user['role'] === 'admin') {
+    header('Location: usuarios.php');
+} elseif ($user['role'] === 'vereador') {
+    header('Location: vereador.php');
+} elseif ($user['role'] === 'recepcionista') {
+    header('Location: recepcao.php');
+} else {
+    header('Location: painel.php');
+}
 exit;

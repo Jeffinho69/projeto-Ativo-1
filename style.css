@@ -1197,3 +1197,445 @@ button.ghost.danger:hover {
 .btn-deny { background: linear-gradient(45deg,#ff6b6b,#c92b2b); color:#fff; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; }
 .small-muted { font-size:13px; color:var(--muted); }
 @media (max-width:900px){ .notif-row { grid-template-columns: 1fr; gap:8px; } .actions { justify-content:flex-start; } }
+
+/* CSS para o Sino de Notificações */
+.notification-wrap {
+    position: relative;
+    z-index: 1001; /* Garante que fique acima de outros itens */
+}
+
+/* Badge (bolinha vermelha) */
+#notificationBadge {
+    position: absolute; 
+    top: -5px; 
+    right: -5px; 
+    background: var(--danger, #e53935); 
+    color: #fff; 
+    border-radius: 999px; 
+    padding: 2px 6px; 
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid var(--card, #fff);
+}
+
+/* O Dropdown (caixinha) */
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px); /* Logo abaixo do botão */
+    right: 0;
+    width: 340px;
+    background: var(--card, #fff);
+    border-radius: 14px;
+    box-shadow: var(--shadow, 0 8px 20px rgba(0,0,0,0.15));
+    z-index: 1002;
+    border: 1px solid #eef3f9;
+    overflow: hidden; /* Para o border-radius funcionar */
+}
+
+.notification-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eef3f9;
+    background: #fcfdff; /* Um fundo levemente diferente */
+}
+
+.notification-list {
+    max-height: 400px; /* Limita a altura */
+    overflow-y: auto;
+}
+
+/* Item individual da notificação */
+.notification-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eef3f9;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.notification-item:hover {
+    background: #f0f7ff; /* Cor de hover */
+}
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item .text {
+    font-weight: 600;
+    color: #111;
+    font-size: 14px;
+}
+
+.notification-item .details {
+    font-size: 13px;
+    color: var(--muted, #6b7280);
+    margin-top: 4px;
+}
+
+/* Quando não há notificações */
+.notification-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--muted, #6b7280);
+}
+
+/* Container principal dos controles */
+.report-controls {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha */
+    gap: 20px;
+    align-items: flex-end; /* Alinha os itens na parte inferior */
+    padding: 16px;
+    background: var(--glass); /* Fundo 'glass' sutil */
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(30,136,229,0.1);
+}
+
+/* Grupos de filtro (usuário, datas) */
+.report-filter-group {
+    display: flex;
+    flex-direction: column; /* Coloca o label em cima do input */
+    gap: 6px;
+    flex-grow: 1; /* Faz os grupos crescerem */
+}
+
+.report-filter-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.report-filter-group input[type="date"],
+.report-filter-group select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #e6edf3;
+    background: #fff;
+    min-width: 180px;
+}
+
+.report-filter-group input[type="date"]:focus,
+.report-filter-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(30,136,229,0.2);
+    outline: none;
+}
+
+/* Grupo de botões de ação (PDF, Limpar) */
+.report-filter-actions {
+    display: flex;
+    gap: 10px;
+    padding-bottom: 2px; /* Alinha os botões com os inputs */
+}
+
+/* Tabela de Relatório */
+#reportTable th, #reportTable td {
+    font-size: 13px; /* Tamanho de fonte menor para caber mais dados */
+    white-space: nowrap; /* Evita quebra de linha em datas */
+}
+
+/* Responsividade dos filtros */
+@media (max-width: 768px) {
+    .report-controls {
+        flex-direction: column; /* Empilha tudo no mobile */
+        align-items: stretch; /* Estica para largura total */
+    }
+    .report-filter-group {
+        min-width: 100%;
+    }
+    .report-filter-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .report-filter-actions .btn,
+    .report-filter-actions .btn-limpar {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+.report-controls {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha */
+    gap: 20px;
+    align-items: flex-end; /* Alinha os itens na parte inferior */
+    padding: 16px;
+    background: var(--glass); /* Fundo 'glass' sutil */
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(30,136,229,0.1);
+}
+
+/* Grupos de filtro (usuário, datas) */
+.report-filter-group {
+    display: flex;
+    flex-direction: column; /* Coloca o label em cima do input */
+    gap: 6px;
+    flex-grow: 1; /* Faz os grupos crescerem */
+}
+
+.report-filter-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.report-filter-group input[type="date"],
+.report-filter-group select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #e6edf3;
+    background: #fff;
+    min-width: 180px;
+}
+
+.report-filter-group input[type="date"]:focus,
+.report-filter-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(30,136,229,0.2);
+    outline: none;
+}
+
+/* Grupo de botões de ação (PDF, Limpar) */
+.report-filter-actions {
+    display: flex;
+    gap: 10px;
+    padding-bottom: 2px; /* Alinha os botões com os inputs */
+}
+
+/* Tabela de Relatório */
+#reportTable th, #reportTable td {
+    font-size: 13px; /* Tamanho de fonte menor para caber mais dados */
+    white-space: nowrap; /* Evita quebra de linha em datas */
+}
+
+/* (NOVO) Wrapper da Tabela para Overflow */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Adiciona a barra de rolagem horizontal */
+    border: 1px solid #eef3f9; /* Borda sutil */
+    border-radius: 12px;
+    margin-top: 15px;
+}
+/* (FIM DO NOVO) */
+
+
+/* Responsividade dos filtros */
+@media (max-width: 768px) {
+    .report-controls {
+        flex-direction: column; /* Empilha tudo no mobile */
+        align-items: stretch; /* Estica para largura total */
+    }
+    .report-filter-group {
+        min-width: 100%;
+    }
+    .report-filter-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .report-filter-actions .btn,
+    .report-filter-actions .btn-limpar {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+/* (MODIFICADO) Layout do formulário de visitante */
+.visitor-form-grid {
+    display: grid;
+    /* Define 3 colunas de tamanho igual */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px;
+}
+
+/* (MODIFICADO) Layout do formulário de visitante */
+.visitor-form-grid {
+    display: grid;
+    /* (A MUDANÇA ESTÁ AQUI) 
+      Mudei a proporção. 1.2fr para os inputs (mais espaço), 2fr para os checkboxes.
+    */
+    grid-template-columns: 1.2fr 2fr; 
+    gap: 20px;
+}
+
+/* (MODIFICADO) Faz a primeira coluna (inputs) ficar na coluna 1 */
+.form-column {
+    grid-column: 1 / 2; /* Fica na primeira coluna */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* (MODIFICADO) Faz a segunda coluna (checkboxes) ficar na coluna 2 */
+.form-column-span2 {
+    grid-column: 2 / 3; /* Fica na segunda coluna */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* (NOVO) O "Grid" de Checkboxes */
+.council-checkbox-grid {
+    display: grid;
+    /* Cria 3 colunas de checkboxes */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px;
+    background: var(--glass);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(30,136,229,0.1);
+    max-height: 250px; /* Altura máxima com barra de rolagem */
+    overflow-y: auto;
+}
+
+/* (NOVO) Estilo de cada item do checkbox */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.checkbox-label:hover {
+    background: #e8f2ff;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent); /* Cor do check (azul) */
+}
+
+.checkbox-label span {
+    font-weight: 500;
+    color: #333;
+}
+
+/* (MODIFICADO) Botão de submit do formulário */
+.visitor-form-grid .btn.primary {
+    grid-column: 1 / -1; /* Ocupa todas as colunas */
+    font-size: 1.1rem;
+    padding: 14px;
+    margin-top: 10px;
+}
+
+/* (MODIFICADO) Ajustes nos labels e inputs */
+.visitor-form-grid label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: -5px; /* Puxa o label para mais perto */
+}
+.visitor-form-grid input[type="text"],
+.visitor-form-grid input[type="password"],
+.visitor-form-grid select {
+    width: 100%;
+    box-sizing: border-box;
+    /* (ADICIONADO) Inputs com o visual correto */
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #e6edf3;
+    background: transparent;
+}
+.visitor-form-grid input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(30,136,229,0.2);
+    outline: none;
+}
+
+
+/* Responsividade do grid de registro */
+@media (max-width: 900px) {
+    .visitor-form-grid {
+        grid-template-columns: 1fr; /* Uma coluna no mobile */
+    }
+    
+    /* (MODIFICADO) Garante que ambas as colunas virem 1 só no mobile */
+    .form-column,
+    .form-column-span2 {
+        grid-column: 1 / -1; /* Ocupa uma coluna no mobile */
+    }
+    .council-checkbox-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 colunas no mobile */
+    }
+}
+
+/* ==================================== */
+/* 10. ESTILOS DO MODAL DE TROCAR SENHA */
+/* ==================================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: var(--card, #fff);
+  padding: 24px 30px;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  /* (Animação do painel de relatórios) */
+  animation: floatIn 0.3s; 
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--muted);
+  cursor: pointer;
+}
+.modal-close:hover {
+  color: #000;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--accent-700);
+}
+
+/* Estilo do formulário dentro do modal */
+.form-modal label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.form-modal input[type="password"],
+.form-modal input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 2px solid #e6edf3;
+}
+.form-modal input[type="password"]:focus,
+.form-modal input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(30,136,229,0.2);
+}
+
+.form-modal button {
+  width: 100%;
+  margin-top: 25px;
+}

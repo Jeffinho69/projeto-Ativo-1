@@ -1,6 +1,12 @@
 // chat.js
 // polling chat basic
-const API = 'chat_api.php';
+
+// =========================================================
+// ================ CORRIGIDO: Nome da API =================
+// =========================================================
+const API = 'chat_ui.php'; // Corrigido de 'chat_api.php' para 'chat_ui.php'
+// =========================================================
+
 let pollTimer = null;
 let sidebarTimer = null;
 let audioPing = null;
@@ -37,6 +43,15 @@ function openConversation(username, full){
   document.getElementById('convSub').textContent = 'Carregando...';
   document.getElementById('msgText').disabled = false;
   document.getElementById('sendBtn').disabled = false;
+  
+  // =========================================================
+  // ================ ADICIONADO: Mostrar Botão ==============
+  // =========================================================
+  // Mostra o botão "Apagar Conversa"
+  const btnDelete = document.getElementById('btnDeleteConv');
+  if (btnDelete) btnDelete.style.display = 'inline-block';
+  // =========================================================
+
   // highlight in sidebar
   document.querySelectorAll('.contact').forEach(el=>{
     el.classList.toggle('contact-selected', el.dataset.username===username);
@@ -65,10 +80,17 @@ function renderMessages(msgs){
     const div = document.createElement('div');
     div.className = 'msg ' + (m.sender === me ? 'me' : 'other');
     div.dataset.id = m.id;
+    
+    // =========================================================
+    // ================ CORRIGIDO: Botão Apagar ================
+    // =========================================================
+    // O botão "Apagar" agora é adicionado corretamente aqui.
     div.innerHTML = `<div>${escapeHtml(m.message)}</div>
       <div class="meta">${escapeHtml(m.sender)} • ${m.created_at}
         <button style="margin-left:8px;font-size:12px;border:none;background:transparent;cursor:pointer;color:rgba(0,0,0,0.35)" onclick="deleteMessage(${m.id})">Apagar</button>
       </div>`;
+    // =========================================================
+      
     area.appendChild(div);
   });
   area.scrollTop = area.scrollHeight;
@@ -134,7 +156,7 @@ function sendMessage(){
 }
 
 function deleteMessage(id){
-  if (!confirm('Apagar essa mensagem?')) return;
+  if (!confirm('Apagar essa mensagem? (Ela sumirá apenas para você)')) return;
   const f = new URLSearchParams();
   f.append('action','delete_message');
   f.append('id', id);
@@ -146,5 +168,29 @@ function deleteMessage(id){
     } else alert(j.msg || 'Erro ao apagar');
   });
 }
+
+// =========================================================
+// ================ ADICIONADO: Apagar Conversa ============
+// =========================================================
+// Função que faltava, chamada pelo botão no HTML
+function deleteEntireConversation() {
+  if (!currentWith) return;
+  if (!confirm('Tem certeza que deseja apagar TODAS as mensagens desta conversa?\n(Elas sumirão apenas para você).')) return;
+
+  const f = new URLSearchParams();
+  f.append('action', 'delete_conversation'); // Nova ação
+  f.append('with', currentWith);
+
+  fetch(API, {method:'POST', body: f}).then(r=>r.json()).then(j=>{
+    if (j.ok) {
+      // Recarrega a conversa (que agora estará vazia)
+      loadConversation(currentWith); 
+    } else {
+      alert(j.msg || 'Erro ao apagar a conversa');
+    }
+  });
+}
+// =========================================================
+
 
 function escapeHtml(s){ if (s===null||s===undefined) return ''; return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }

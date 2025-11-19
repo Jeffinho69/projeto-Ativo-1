@@ -25,13 +25,44 @@ $fullName = htmlspecialchars($user['fullName'] ?? $user['username']);
   .chat-list .contact.active { background: linear-gradient(90deg,var(--accent),var(--accent-700)); color:#fff; }
 
   .chat-main { flex:1; display:flex; flex-direction:column; background:var(--card); border-radius:12px; box-shadow:var(--shadow); max-height:80vh; overflow:hidden; }
-  .chat-header { padding:14px; border-bottom:1px solid #eef3f9; display:flex; align-items:center; gap:12px; }
+  .chat-header { padding:14px; border-bottom:1px solid #eef3f9; display:flex; align-items:center; justify-content: space-between; gap:12px; }
   .chat-body { padding:16px; overflow:auto; flex:1; background:linear-gradient(#fbfdff,#f7fbff); }
   .chat-footer { padding:12px; border-top:1px solid #eef3f9; display:flex; gap:8px; align-items:center; }
   .msg { max-width:75%; margin-bottom:10px; padding:10px 12px; border-radius:12px; box-shadow:0 6px 18px rgba(11,18,28,0.06); }
   .msg.me { margin-left:auto; background:linear-gradient(90deg,var(--accent),var(--accent-700)); color:#fff; border-bottom-right-radius:4px; }
   .msg.them { margin-right:auto; background:#fff; color:#111; border-bottom-left-radius:4px; }
   .msg .time{ display:block; font-size:12px; color:var(--muted); margin-top:6px; opacity:0.9 }
+  
+  /* ========================================================= */
+  /* ================ CSS DOS BOTÕES (MODIFICADO) ============ */
+  /* ========================================================= */
+  .msg .time button { 
+      background:transparent; 
+      border: 1px solid currentColor; /* Borda para visibilidade */
+      border-radius: 4px;
+      color:inherit; 
+      opacity: 0.8; /* Mais opaco */
+      cursor:pointer; 
+      font-size:11px; 
+      padding: 2px 4px; /* Espaçamento interno */
+      margin-left: 8px; 
+  }
+  .msg .time button:hover { opacity: 1; background: rgba(0,0,0,0.1); }
+  .msg.me .time { color: rgba(255,255,255,0.7); }
+  .msg.me .time button { color: rgba(255,255,255,0.8); }
+  .msg.me .time button:hover { background: rgba(255,255,255,0.2); }
+  
+  /* (NOVO) Estilo para o botão "Apagar para Todos" */
+  .msg .time button.btn-everyone {
+      color: #ef4444; /* Vermelho */
+      border-color: #ef4444;
+  }
+  .msg.me .time button.btn-everyone {
+      color: #ffb8b8; /* Vermelho claro no balão escuro */
+      border-color: #ffb8b8;
+  }
+  /* ========================================================= */
+  
   .input { flex:1; padding:10px 12px; border-radius:10px; border:2px solid #e6edf3; outline:none; }
   .btn-send { padding:10px 14px; border-radius:10px; border:none; background:linear-gradient(90deg,var(--accent),var(--accent-700)); color:#fff; font-weight:700; cursor:pointer; }
   .unread-badge { background:#ef4444;color:white;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px; }
@@ -57,21 +88,31 @@ $fullName = htmlspecialchars($user['fullName'] ?? $user['username']);
     <div class="top-actions">
       <div id="clock" class="clock">--:--:--</div>
       <div class="user-display"><?php echo $fullName;?></div>
-      <button class="btn ghost" onclick="location.href='painel.php'">Voltar</button>
+      <button class="btn ghost" onclick="history.back()">Voltar</button>
     </div>
   </header>
 
   <main class="chat-wrap">
     <aside class="chat-list" id="contacts">
-      <!-- contatos carregados por JS -->
       <div style="font-weight:700;margin-bottom:8px">Contatos</div>
       <div id="contactsList">Carregando...</div>
     </aside>
 
     <section class="chat-main">
       <div class="chat-header" id="chatHeader">
-        <div style="font-weight:800" id="chatWith">Selecione um contato</div>
-        <div style="margin-left:auto" id="contactBadge"></div>
+        <div>
+            <div style="font-weight:800" id="chatWith">Selecione um contato</div>
+            <div style="margin-left:auto" id="contactBadge"></div>
+        </div>
+        
+        <div style="display:flex; gap: 8px;">
+            <button id="btnDeleteConv" class="btn ghost" style="display:none; background:#ffc107; color:black;" onclick="deleteEntireConversation()">
+                Apagar (p/ mim)
+            </button>
+            <button id="btnDeleteConvEveryone" class="btn ghost" style="display:none; background:#e53935; color:white;" onclick="deleteConversationEveryone()">
+                Apagar (p/ Todos)
+            </button>
+        </div>
       </div>
 
       <div class="chat-body" id="chatBody">Selecione um contato para começar a conversar.</div>
@@ -85,7 +126,6 @@ $fullName = htmlspecialchars($user['fullName'] ?? $user['username']);
 
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- Som de notificação (arquivo embutido como base64 simples Opcional) -->
   <audio id="pingAudio" src=""></audio>
 
 <script>
@@ -93,6 +133,7 @@ const myUser = '<?php echo addslashes($username); ?>';
 let currentContact = null;
 let pollInterval = null;
 let lastMessageId = 0;
+const API_URL = 'chat_api.php'; // URL da API
 
 // helper
 function el(q){ return document.querySelector(q); }
@@ -110,7 +151,7 @@ function showToast(text, type='success'){
 
 // carrega lista de contatos (quem trocou msgs ou usuários do sistema)
 async function loadContacts(){
-  const res = await fetch('chat_api.php?action=list_contacts');
+  const res = await fetch(API_URL + '?action=list_contacts');
   const j = await res.json();
   const list = document.getElementById('contactsList');
   list.innerHTML = '';
@@ -126,51 +167,90 @@ async function loadContacts(){
   });
 }
 
-
-
+// (FUNÇÃO MODIFICADA)
 // abre conversa com contato
 function openChatWith(username, fullName){
   currentContact = username;
   el('#chatWith').textContent = fullName + ' ('+username+')';
   el('#chatInput').disabled = false;
   el('#btnSend').disabled = false;
+  
+  // Mostra os botões de apagar conversa
+  el('#btnDeleteConv').style.display = 'inline-block';
+  el('#btnDeleteConvEveryone').style.display = 'inline-block';
+  
   lastMessageId = 0;
   el('#chatBody').innerHTML = 'Carregando...';
   markRead(username);
-  loadMessages();
+  loadMessages(true); // true = full reload
+  
   if(pollInterval) clearInterval(pollInterval);
-  pollInterval = setInterval(()=> { loadMessages(); loadContacts(); }, 2000);
-  loadContacts();
+  pollInterval = setInterval(()=> { loadMessages(false); loadContacts(); }, 2000); // false = poll new
+  
+  // Atualiza a lista de contatos para remover o badge
+  loadContacts(); 
 }
 
 // marca mensagens como lidas (server-side)
 async function markRead(contact){
-  await fetch('chat_api.php?action=mark_read', {
+  await fetch(API_URL + '?action=mark_read', {
     method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'contact='+encodeURIComponent(contact)
   });
   loadContacts();
 }
 
+// (FUNÇÃO MODIFICADA)
 // carrega mensagens
-async function loadMessages(){
+async function loadMessages(isFullReload = false){
   if(!currentContact) return;
-  const res = await fetch('chat_api.php?action=fetch&contact='+encodeURIComponent(currentContact)+'&since_id='+lastMessageId);
+  
+  // Se for um reload total, limpa o 'lastMessageId' e o chat
+  if (isFullReload) {
+      lastMessageId = 0;
+      el('#chatBody').innerHTML = '';
+  }
+  
+  const res = await fetch(API_URL + '?action=fetch&contact='+encodeURIComponent(currentContact)+'&since_id='+lastMessageId);
   const j = await res.json();
   if(!j.ok) return;
   const body = el('#chatBody');
-  // if full replace when since_id==0
-  if(Number(j.since_id) === 0 || lastMessageId === 0){
-    body.innerHTML = '';
-  }
+  
+  let newMessages = false;
   j.data.forEach(m=>{
+    newMessages = true;
+    // Evita duplicar mensagens
+    if (document.querySelector(`.msg[data-id="${m.id}"]`)) return; 
+    
     lastMessageId = Math.max(lastMessageId, m.id);
     const div = document.createElement('div');
     div.className = 'msg ' + (m.sender === myUser ? 'me' : 'them');
-    div.innerHTML = `<div>${escapeHtml(m.message)}</div><span class="time">${escapeHtml(m.sender)} • ${escapeHtml(m.sent_at)}</span>`;
+    div.dataset.id = m.id; // Adiciona ID para o 'delete'
+    
+    // (MODIFICADO) Adiciona os botões de apagar
+    let deleteButtonMe = `<button onclick="deleteMessage(${m.id})">Apagar p/ mim</button>`;
+    let deleteButtonEveryone = '';
+    
+    // Botão "Apagar para Todos" (só se eu enviei)
+    if (m.sender === myUser) {
+        deleteButtonEveryone = `<button class="btn-everyone" onclick="deleteMessageEveryone(${m.id})">Apagar p/ Todos</button>`;
+    }
+    
+    div.innerHTML = `
+        <div>${escapeHtml(m.message)}</div>
+        <span class="time">
+            ${escapeHtml(m.sender)} • ${escapeHtml(m.sent_at)}
+            ${deleteButtonMe}
+            ${deleteButtonEveryone}
+        </span>
+    `;
     body.appendChild(div);
   });
-  body.scrollTop = body.scrollHeight;
-  if(j.playPing) {
+  
+  if (newMessages) {
+      body.scrollTop = body.scrollHeight;
+  }
+  
+  if(j.playPing && !isFullReload) { // Só toca o ping em 'poll', não no 'load' inicial
     const audio = document.getElementById('pingAudio');
     if(audio && audio.src) audio.play().catch(()=>{});
   }
@@ -181,18 +261,103 @@ async function sendMessage(){
   const txt = el('#chatInput').value.trim();
   if(!txt || !currentContact) return;
   el('#chatInput').value = '';
-  const res = await fetch('chat_api.php?action=send', {
+  const res = await fetch(API_URL + '?action=send', {
     method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
     body: `receiver=${encodeURIComponent(currentContact)}&message=${encodeURIComponent(txt)}`
   });
   const j = await res.json();
   if(j.ok){
-    loadMessages();
-    loadContacts();
+    loadMessages(false); // Carrega novas mensagens
+    loadContacts(); // Atualiza a barra lateral (para 'não lido')
   } else {
     showToast(j.msg || 'Erro ao enviar', 'error');
   }
 }
+
+// =========================================================
+// ================ Apagar Mensagem (p/ mim) ===============
+// =========================================================
+async function deleteMessage(id) {
+    if (!confirm('Tem certeza que deseja apagar esta mensagem?\n(Ela sumirá apenas para você).')) return;
+    
+    const res = await fetch(API_URL + '?action=delete_message', {
+        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body: `id=${id}`
+    });
+    const j = await res.json();
+    if (j.ok) {
+        // Remove a mensagem da tela
+        const msgElement = document.querySelector(`.msg[data-id="${id}"]`);
+        if (msgElement) msgElement.remove();
+        showToast('Mensagem apagada');
+    } else {
+        showToast(j.msg || 'Erro ao apagar', 'error');
+    }
+}
+
+// =========================================================
+// ================ ADICIONADO: Apagar Msg p/ Todos ========
+// =========================================================
+async function deleteMessageEveryone(id) {
+    if (!confirm('Tem certeza que deseja apagar esta mensagem PARA TODOS?\n(Esta ação não pode ser desfeita).')) return;
+    
+    const res = await fetch(API_URL + '?action=delete_message_everyone', {
+        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body: `id=${id}`
+    });
+    const j = await res.json();
+    if (j.ok) {
+        // Remove a mensagem da tela
+        const msgElement = document.querySelector(`.msg[data-id="${id}"]`);
+        if (msgElement) msgElement.remove();
+        showToast('Mensagem apagada para todos');
+    } else {
+        showToast(j.msg || 'Erro ao apagar', 'error');
+    }
+}
+
+// =========================================================
+// ================ Apagar Conversa (p/ mim) ===============
+// =========================================================
+async function deleteEntireConversation() {
+    if (!currentContact) return;
+    if (!confirm('Tem certeza que deseja apagar TODAS as mensagens desta conversa?\n(Elas sumirão apenas para você).')) return;
+    
+    const res = await fetch(API_URL + '?action=delete_conversation', {
+        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body: `contact=${encodeURIComponent(currentContact)}`
+    });
+    const j = await res.json();
+    if (j.ok) {
+        // Recarrega a conversa (que agora estará vazia)
+        loadMessages(true); // true = full reload
+        showToast('Conversa limpa');
+    } else {
+        showToast(j.msg || 'Erro ao limpar conversa', 'error');
+    }
+}
+
+// =========================================================
+// ================ ADICIONADO: Apagar Conv. p/ Todos ======
+// =========================================================
+async function deleteConversationEveryone() {
+    if (!currentContact) return;
+    if (!confirm('PERIGO!\nTem certeza que deseja apagar TODAS as mensagens desta conversa PARA TODOS?\n(Esta ação não pode ser desfeita).')) return;
+    
+    const res = await fetch(API_URL + '?action=delete_conversation_everyone', {
+        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body: `contact=${encodeURIComponent(currentContact)}`
+    });
+    const j = await res.json();
+    if (j.ok) {
+        loadMessages(true); // Recarrega a conversa (vazia)
+        showToast('Conversa limpa para todos');
+    } else {
+        showToast(j.msg || 'Erro ao limpar conversa', 'error');
+    }
+}
+// =========================================================
+
 
 document.addEventListener('DOMContentLoaded', ()=>{
   loadContacts();

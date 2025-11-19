@@ -1,10 +1,10 @@
 <?php
-// chat_api.php
+// chat_ui.php
 require_once 'config.php';
 header('Content-Type: application/json; charset=utf-8');
 
 $mysqli = db_connect();
-session_start();
+// session_start(); // Removido, pois o config.php já inicia a sessão
 
 if (empty($_SESSION['user'])) {
     echo json_encode(['ok'=>false,'msg'=>'Not logged']);
@@ -82,6 +82,27 @@ if ($action === 'recent_preview') {
     json(['ok'=>true,'data'=>$rows]);
 }
 
+
+// =========================================================
+// ================ ADICIONADO: Apagar Conversa ============
+// =========================================================
+if ($action === 'delete_conversation') {
+    $with = $mysqli->real_escape_string($_POST['with'] ?? '');
+    if (!$with) json(['ok'=>false,'msg'=>'missing with']);
+
+    // Marca como deletado por mim (quando eu enviei)
+    $mysqli->query("UPDATE chat_messages SET deleted_by_sender=1 WHERE sender='{$me}' AND receiver='{$with}'");
+    
+    // Marca como deletado por mim (quando eu recebi)
+    $mysqli->query("UPDATE chat_messages SET deleted_by_receiver=1 WHERE receiver='{$me}' AND sender='{$with}'");
+    
+    json(['ok'=>true]);
+}
+// =========================================================
+// =================== FIM DA ADIÇÃO =====================
+// =========================================================
+
+
 if ($action === 'delete_message') {
     $id = intval($_POST['id'] ?? 0);
     if (!$id) json(['ok'=>false,'msg'=>'missing id']);
@@ -102,9 +123,10 @@ if ($action === 'delete_message') {
 json(['ok'=>false,'msg'=>'unknown action']);
 
 
+// PARTE HTML (NÃO MUDOU)
 // chat_ui.php
-require_once 'config.php';
-session_start();
+// require_once 'config.php'; // (Já foi chamado lá em cima)
+// session_start(); // (Já foi chamado lá em cima)
 if (empty($_SESSION['user'])) { header('Location: index.php'); exit; }
 $user = $_SESSION['user'];
 $me = htmlspecialchars($user['username']);
@@ -113,11 +135,12 @@ $myFull = htmlspecialchars($user['fullName']);
 <!doctype html>
 <html lang="pt-BR">
 <head>
+<meta charset="utf-t-BR">
+<head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Chat — Painel</title>
-<link rel="stylesheet" href="style.css"> <!-- usa seu css -->
-<style>
+<link rel="stylesheet" href="style.css"> <style>
 /* minimal styles for chat, matches seu visual */
 .chat-wrap{max-width:1100px;margin:40px auto;display:flex;gap:18px}
 .chat-sidebar{width:300px;background:var(--card);padding:12px;border-radius:14px;box-shadow:var(--shadow)}
@@ -165,10 +188,16 @@ $myFull = htmlspecialchars($user['fullName']);
   </aside>
 
   <section class="chat-main">
-    <div id="convHeader" style="padding-bottom:8px;border-bottom:1px solid #eef3f9">
-      <strong id="convWith">Selecione um contato</strong>
-      <div id="convSub" class="small-muted">Clique em um contato para iniciar</div>
-    </div>
+   <div id="convHeader" style="padding-bottom:8px;border-bottom:1px solid #eef3f9; display:flex; justify-content:space-between; align-items:center;">
+  <div>
+    <strong id="convWith">Selecione um contato</strong>
+    <div id="convSub" class="small-muted">Clique em um contato para iniciar</div>
+  </div>
+  
+  <button id="btnDeleteConv" class="btn ghost danger" style="display:none; background: #e53935; color: white;" onclick="deleteEntireConversation()">
+    Apagar Conversa
+  </button>
+</div>
 
     <div class="messages" id="messagesArea">
       <div class="empty-center">Nenhuma conversa selecionada</div>

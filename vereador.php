@@ -73,10 +73,24 @@ if ($user['role'] !== 'vereador' && $user['role'] !== 'admin') {
       <div id="clock" class="clock">--:--:--</div>
       <div id="userDisplay" class="user-display"><?php echo htmlspecialchars($user['fullName']); ?></div>
       <button class="btn ghost" onclick="location.href='chat.php'">💬 Chat</button>
-<span id="chatNotif" class="chat-notif hidden">●</span>
-
       <button id="logoutBtn" class="btn ghost" onclick="location.href='logout.php'">Sair</button>
-    </div>
+
+      <div class="notification-wrap">
+          <button id="notificationBellBtn" class="btn ghost" style="padding: 8px 12px; position: relative;">
+              🔔
+              <span id="notificationBadge" class="badge" style="display:none; position:absolute; top:-8px; right:-8px; background: #e53935; color: #fff; border-radius: 999px; padding: 2px 6px; font-size: 11px; border: 2px solid var(--card, #fff);">0</span>
+          </button>
+          
+          <div id="notificationDropdown" class="notification-dropdown" style="display:none;">
+              <div class="notification-header">
+                  <strong>Notificações</strong>
+              </div>
+              <div id="notificationList" class="notification-list">
+                  <div class="notification-empty">Nenhuma notificação.</div>
+              </div>
+          </div>
+      </div>
+      </div>
   </header>
 
   <main class="main-grid">
@@ -100,20 +114,67 @@ if ($user['role'] !== 'vereador' && $user['role'] !== 'admin') {
   </main>
 
   <div id="toast-container" class="toast-container"></div>
-</body>
+
+<!-- Botão flutuante de ajuda -->
+<button id="helpBtn" class="btn ghost" 
+        style="position:fixed;bottom:20px;right:20px;z-index:1000;background:#0b73e0;color:#fff;border:none;padding:12px 20px;border-radius:30px;box-shadow:0 3px 6px rgba(0,0,0,0.2);cursor:pointer;font-weight:bold;">
+  💬 Ajuda / Suporte
+</button>
+
+<!-- Janela de ajuda -->
+<div id="helpBox" class="light" 
+     style="display:none;position:fixed;bottom:80px;right:20px;width:350px;background:#fff;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,0.2);padding:18px;z-index:1001;">
+  <h3 style="margin-top:0;color:#0b73e0;">Chamado de Suporte</h3>
+  <p style="font-size:14px;color:#444;margin-bottom:6px;">
+    Envie um e-mail para o suporte:<br>
+    <b style="color:#0b73e0;">help@camaravitoria.on.spiceworks.com</b>
+  </p>
+
+  <p style="font-size:13px;line-height:1.5;color:#555;margin-bottom:8px;">
+    ➤ Acesse o Webmail clicando abaixo:<br>
+    <a href="https://webmail.vitoriadesantoantao.pe.leg.br/cpsess6726689678/3rdparty/roundcube/?_task=mail&_action=compose&_id=1035450755690c9163904a1"
+       target="_blank" style="color:#0b73e0;text-decoration:none;font-weight:bold;">
+       👉 Abrir Webmail
+    </a>
+  </p>
+
+  <ul style="font-size:13px;color:#555;line-height:1.5;margin-left:18px;">
+    <li>Faça login com o <b>mesmo e-mail</b> usado nesse sistema e <b>senha</b> fornecida pelo setor de TI <b> Se não foi alterada.</b></li>
+    <li> Após logar, clicar em <b>Criar email</b></li>
+    <li>No campo <b>Para</b>, digite o e-mail do suporte acima.</li>
+    <li>No <b>Assunto</b>, escreva o título do problema.<br>
+      <small style="color:#777;">Ex: Impressora não puxa papel</small>
+    </li>
+    <li>No corpo do e-mail, descreva o defeito detalhadamente.<br>
+      <small style="color:#777;">Se possível, anexe uma foto.</small>
+    </li>
+  </ul>
+
+  <p style="font-size:13px;color:#666;margin-top:8px;">
+    ✅ Após enviar, sua solicitação será automaticamente encaminhada ao setor de TI.
+  </p>
+
+  <div style="text-align:right;margin-top:12px;">
+    <button id="closeHelp" class="btn ghost" 
+            style="background:#f2f2f2;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;">Fechar</button>
+  </div>
+</div>
 
 <script>
-function updateTopBadge(){
-  fetch('chat_api.php?action=poll_unread').then(r=>r.json()).then(j=>{
-    if (!j.ok) return;
-    const b = document.getElementById('chatBadge');
-    if (!b) return;
-    if (j.unread && j.unread>0) { b.style.display='inline-block'; b.textContent = j.unread; }
-    else b.style.display='none';
+const helpBtn = document.getElementById('helpBtn');
+const helpBox = document.getElementById('helpBox');
+const closeHelp = document.getElementById('closeHelp');
+
+if (helpBtn && helpBox && closeHelp) {
+  helpBtn.addEventListener('click', () => {
+    helpBox.style.display = helpBox.style.display === 'none' ? 'block' : 'none';
+  });
+  closeHelp.addEventListener('click', () => {
+    helpBox.style.display = 'none';
   });
 }
-updateTopBadge();
-setInterval(updateTopBadge, 5000);
 </script>
 
+<script src="notifications.js"></script> 
+</body>
 </html>

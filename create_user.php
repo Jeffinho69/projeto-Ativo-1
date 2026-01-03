@@ -1,5 +1,5 @@
 <?php
-// create_user.php - use somente temporariamente para criar usuários
+
 require_once 'config.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $u = trim($_POST['username'] ?? '');
@@ -22,4 +22,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <input name="fullName" placeholder="Full name"><br>
   <select name="role"><option value="recep">recepção</option><option value="vereador">vereador</option><option value="admin">admin</option></select><br>
   <button type="submit">Criar</button>
+
 </form>

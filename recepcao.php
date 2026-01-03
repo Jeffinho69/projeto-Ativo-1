@@ -13,11 +13,7 @@ if ($user['role'] !== 'recep' && $user['role'] !== 'admin') {
 
 // lista de vereadores (pode ser dinâmica, aqui você pode buscar de uma tabela; mantemos estática)
 $councilors = [
-  "Ana Paula", "André de Bau", "Arquivo", "Bau Nogueira", "BIU De Genário",
-  "Carlos Henrique Queiroz", "Celso Bezerra", "Comunicação", "Compras", "Controladoria", "Denis Lima", "Diretoria",
-  "Edmilson de Várzea Grande", "Everaldo Arruda", "Fabio Raylux", "Felipe Cezar", "Financeiro", "Ouvidoria", "Procuradoria",
-  "Gold do Pneu", "Josias da Saúde", "JOTA Domingos", "Lourinaldo Júnior",
-  "Mano Holanda", "Marcos da Prestação", "Mizael de Davi", "Novo da Banca", "TI", 
+  "Ana Paula", "TI", 
 ];
 ?>
 <!doctype html>

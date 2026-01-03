@@ -104,10 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   
-  // =========================================================
-  // ================ (JAVASCRIPT ADICIONADO) ================
-  // ================ LÓGICA MODAL SENHA =====================
-  // =========================================================
+  
   const showPassBtn = document.getElementById('showChangePassModal');
   const passwordModal = document.getElementById('passwordModal');
   const modalCloseBtn = document.getElementById('modalCloseBtn');
@@ -181,9 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
               });
       });
   }
-  // =========================================================
-  // ================ FIM DO JAVASCRIPT ADICIONADO ===========
-  // =========================================================
+  
 });
 </script>
 

@@ -1,4 +1,9 @@
-# projeto-Ativo-1
+# Câmara Recepção
+![Status](https://img.shields.io/badge/Status-Em_Desenvolvimento-yellow)
+![PHP](https://img.shields.io/badge/PHP-8.0+-777BB4?style=flat&logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?style=flat&logo=mysql&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?style=flat&logo=bootstrap&logoColor=white)
+
 🏛 Sistema de Controle de Visitantes - Câmara Municipal
 
 Este projeto é um sistema web em PHP, JavaScript e MySQL desenvolvido para gerenciar o registro e controle de visitantes na Câmara Municipal.
